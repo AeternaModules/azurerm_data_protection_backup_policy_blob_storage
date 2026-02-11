@@ -34,7 +34,7 @@ EOT
     retention_rule = optional(object({
       criteria = object({
         absolute_criteria      = optional(string)
-        days_of_month          = optional(set(string))
+        days_of_month          = optional(set(number))
         days_of_week           = optional(set(string))
         months_of_year         = optional(set(string))
         scheduled_backup_times = optional(set(string))
