@@ -48,5 +48,55 @@ EOT
       priority = number
     }))
   }))
+  validation {
+    condition = alltrue([
+      for k, v in var.data_protection_backup_policy_blob_storages : (
+        can(regex("^[-a-zA-Z0-9]{3,150}$", v.name))
+      )
+    ])
+    error_message = "DataProtection BackupPolicy name must be 3 - 150 characters long, contain only letters, numbers and hyphens."
+  }
+  validation {
+    condition = alltrue([
+      for k, v in var.data_protection_backup_policy_blob_storages : (
+        v.time_zone == null || (length(v.time_zone) > 0)
+      )
+    ])
+    error_message = "must not be empty"
+  }
+  # --- Unconfirmed validation candidates, derived from azurerm_data_protection_backup_policy_blob_storage's provider source ---
+  # Not auto-enabled: either a bespoke provider validator we can't safely translate,
+  # or a path that crosses a list-typed block (needs its own for_each wrapping).
+  # Review, translate into a real validation{} block above, and delete once confirmed.
+  # path: vault_id
+  #   source:    [from basebackuppolicyresources.ValidateBackupVaultID] !ok
+  # path: vault_id
+  #   source:    [from basebackuppolicyresources.ValidateBackupVaultID] err != nil
+  # path: operational_default_retention_duration
+  #   source:    [from helperValidate.ISO8601Duration] !ok
+  # path: operational_default_retention_duration
+  #   source:    [from helperValidate.ISO8601Duration] err != nil
+  # path: vault_default_retention_duration
+  #   source:    [from helperValidate.ISO8601Duration] !ok
+  # path: vault_default_retention_duration
+  #   source:    [from helperValidate.ISO8601Duration] err != nil
+  # path: retention_rule.criteria.absolute_criteria
+  #   source:    validation.StringInSlice value list is not a literal []string - likely a generated PossibleValuesFor*() helper; resolve separately
+  # path: retention_rule.criteria.days_of_month[*]
+  #   source:    validation.Any(...) - no translation rule yet, add one
+  # path: retention_rule.criteria.days_of_week[*]
+  #   source:    validation.IsDayOfTheWeek(...) - no translation rule yet, add one
+  # path: retention_rule.criteria.months_of_year[*]
+  #   source:    validation.IsMonth(...) - no translation rule yet, add one
+  # path: retention_rule.criteria.scheduled_backup_times[*]
+  #   source:    validation.IsRFC3339Time(...) - no translation rule yet, add one
+  # path: retention_rule.criteria.weeks_of_month[*]
+  #   source:    validation.StringInSlice value list is not a literal []string - likely a generated PossibleValuesFor*() helper; resolve separately
+  # path: retention_rule.life_cycle.data_store_type
+  #   source:    validation.StringInSlice value list is not a literal []string - likely a generated PossibleValuesFor*() helper; resolve separately
+  # path: retention_rule.life_cycle.duration
+  #   source:    [from helperValidate.ISO8601Duration] !ok
+  # path: retention_rule.life_cycle.duration
+  #   source:    [from helperValidate.ISO8601Duration] err != nil
 }
 
