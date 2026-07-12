@@ -31,7 +31,7 @@ EOT
     operational_default_retention_duration = optional(string)
     time_zone                              = optional(string)
     vault_default_retention_duration       = optional(string)
-    retention_rule = optional(object({
+    retention_rule = optional(list(object({
       criteria = object({
         absolute_criteria      = optional(string)
         days_of_month          = optional(set(number))
@@ -46,28 +46,15 @@ EOT
       })
       name     = string
       priority = number
-    }))
+    })))
   }))
-  validation {
-    condition = alltrue([
-      for k, v in var.data_protection_backup_policy_blob_storages : (
-        can(regex("^[-a-zA-Z0-9]{3,150}$", v.name))
-      )
-    ])
-    error_message = "DataProtection BackupPolicy name must be 3 - 150 characters long, contain only letters, numbers and hyphens."
-  }
-  validation {
-    condition = alltrue([
-      for k, v in var.data_protection_backup_policy_blob_storages : (
-        v.time_zone == null || (length(v.time_zone) > 0)
-      )
-    ])
-    error_message = "must not be empty"
-  }
   # --- Unconfirmed validation candidates, derived from azurerm_data_protection_backup_policy_blob_storage's provider source ---
   # Not auto-enabled: either a bespoke provider validator we can't safely translate,
   # or a path that crosses a list-typed block (needs its own for_each wrapping).
   # Review, translate into a real validation{} block above, and delete once confirmed.
+  # path: name
+  #   condition: can(regex("^[-a-zA-Z0-9]{3,150}$", value))
+  #   message:   DataProtection BackupPolicy name must be 3 - 150 characters long, contain only letters, numbers and hyphens.
   # path: vault_id
   #   source:    [from basebackuppolicyresources.ValidateBackupVaultID] !ok
   # path: vault_id
@@ -76,6 +63,9 @@ EOT
   #   source:    [from helperValidate.ISO8601Duration] !ok
   # path: operational_default_retention_duration
   #   source:    [from helperValidate.ISO8601Duration] err != nil
+  # path: time_zone
+  #   condition: length(value) > 0
+  #   message:   must not be empty
   # path: vault_default_retention_duration
   #   source:    [from helperValidate.ISO8601Duration] !ok
   # path: vault_default_retention_duration

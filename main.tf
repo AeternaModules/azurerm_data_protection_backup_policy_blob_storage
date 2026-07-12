@@ -9,7 +9,7 @@ resource "azurerm_data_protection_backup_policy_blob_storage" "data_protection_b
   vault_default_retention_duration       = each.value.vault_default_retention_duration
 
   dynamic "retention_rule" {
-    for_each = each.value.retention_rule != null ? [each.value.retention_rule] : []
+    for_each = each.value.retention_rule != null ? each.value.retention_rule : []
     content {
       criteria {
         absolute_criteria      = retention_rule.value.criteria.absolute_criteria
