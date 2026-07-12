@@ -1,3 +1,7 @@
+output "data_protection_backup_policy_blob_storages_id" {
+  description = "Map of id values across all data_protection_backup_policy_blob_storages, keyed the same as var.data_protection_backup_policy_blob_storages"
+  value       = { for k, v in azurerm_data_protection_backup_policy_blob_storage.data_protection_backup_policy_blob_storages : k => v.id }
+}
 output "data_protection_backup_policy_blob_storages_backup_repeating_time_intervals" {
   description = "Map of backup_repeating_time_intervals values across all data_protection_backup_policy_blob_storages, keyed the same as var.data_protection_backup_policy_blob_storages"
   value       = { for k, v in azurerm_data_protection_backup_policy_blob_storage.data_protection_backup_policy_blob_storages : k => v.backup_repeating_time_intervals }
